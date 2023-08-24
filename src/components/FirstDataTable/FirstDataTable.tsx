@@ -23,7 +23,6 @@ export const FirstDataTable = () => {
 
     const [userData, setUserData] = useState<user[]>([])
 
-
     const Data = async () => {
         try {
             const response = await fetch('https://jsonplaceholder.typicode.com/posts');
@@ -61,6 +60,8 @@ export const FirstDataTable = () => {
                     <h1 className="font-mono text-center font-bold text-[32px]">Component 1</h1>
                 </div>
 
+                {/* //Component 1 */}
+
                 <div className="w-1/2 h-[500px] m-auto">
                     <DataGrid rows={rows}
                         initialState={{
@@ -79,19 +80,20 @@ export const FirstDataTable = () => {
                     />
                 </div>
 
-                <div>
-                    {Department.map((dept: Department) => (
-                        <li key={dept.department}>
-                            {dept.department}
-                            <ul>
-                                {dept.sub_departments.map((subDept: string) => (
-                                    <li key={subDept}>{subDept}</li>
-                                ))}
-                            </ul>
-                        </li>
-                    ))}
-                </div>
+                {/* //Component 2 */}
 
+                <div>
+                    <div className="m-auto w-1/2 p-5">
+                        {Department.map((dept: Department) => (
+                            <ul key={dept.department} className="my-2">
+                                <div className="flex items-center"><input type="checkbox" className="w-[20px] mr-2.5 h-[20px]"/><h1 className="font-mono font-bold text-xl">{dept.department}</h1></div>
+                                    {dept.sub_departments.map((subDept: string) => (
+                                        <li key={subDept} className="ml-7 flex items-center"><input type="checkbox" className="w-[15px] mr-2.5 h-[15px]"/><span className="font-mono font-semibold text-[16px]">{subDept}</span></li>
+                                    ))}
+                            </ul>
+                        ))}
+                    </div>
+                </div>
             </div>
         </>
     )
