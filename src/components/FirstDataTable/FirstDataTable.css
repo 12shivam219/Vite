@@ -1,0 +1,8 @@
+.cell {
+    border: 2px solid black;
+    text-align: center;
+    margin: 4px 4px 4px 4px;
+    color: black;
+    font-size: 16px;
+    font-weight: 700;
+}
