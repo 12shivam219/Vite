@@ -22,6 +22,7 @@ interface Department {
 export const FirstDataTable = () => {
 
     const [userData, setUserData] = useState<user[]>([])
+    const [isOpen, setIsOpen] = useState(false);
 
     const Data = async () => {
         try {
@@ -32,6 +33,10 @@ export const FirstDataTable = () => {
             console.error('Error fetching data:', error);
         }
     }
+
+    const toggleCollapsible = () => {
+        setIsOpen(!isOpen);
+    };
 
     useEffect(() => {
         Data();
@@ -49,6 +54,8 @@ export const FirstDataTable = () => {
         body: row.body
 
     }))
+
+    const Collapseicon = isOpen ? <>&#8722;</> : <>&#43;</>;
 
     const pageSizeOptions = [10, 20, 30, 100]
 
@@ -83,13 +90,16 @@ export const FirstDataTable = () => {
                 {/* //Component 2 */}
 
                 <div>
+                    <div className="py-3">
+                        <h1 className="font-mono text-center font-bold text-[32px]">Component 2</h1>
+                    </div>
                     <div className="m-auto w-1/2 p-5">
                         {Department.map((dept: Department) => (
                             <ul key={dept.department} className="my-2">
-                                <div className="flex items-center"><input type="checkbox" className="w-[20px] mr-2.5 h-[20px]"/><h1 className="font-mono font-bold text-xl">{dept.department}</h1></div>
-                                    {dept.sub_departments.map((subDept: string) => (
-                                        <li key={subDept} className="ml-7 flex items-center"><input type="checkbox" className="w-[15px] mr-2.5 h-[15px]"/><span className="font-mono font-semibold text-[16px]">{subDept}</span></li>
-                                    ))}
+                                <div className="flex items-center"><span className="font-extrabold text-[23px] mr-2.5 mb-1.5" onClick={toggleCollapsible}>{Collapseicon}</span><input type="checkbox" className="w-[20px] mr-2.5 h-[20px]" /><h1 className="font-mono font-bold text-xl">{dept.department}</h1></div>
+                                {dept.sub_departments.map((subDept: string) => (
+                                    <li key={subDept} className="ml-14 flex items-center"><input type="checkbox" className="w-[15px] mr-2.5 h-[15px]" /><span className="font-mono font-semibold text-[16px]">{subDept}</span></li>
+                                ))}
                             </ul>
                         ))}
                     </div>
