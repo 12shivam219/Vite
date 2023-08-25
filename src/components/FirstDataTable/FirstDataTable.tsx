@@ -1,7 +1,7 @@
 import { DataGrid } from "@mui/x-data-grid"
 import { useEffect, useState } from "react"
 import './FirstDataTable.css'
-import Department from '../JSON/Department.json'
+import DepartmentData from '../JSON/DepartmentData.json'
 
 interface user {
     id: number;
@@ -9,20 +9,63 @@ interface user {
     body: string;
 }
 
-// interface SubDepartment {
-//     sub_department: string;
-// }
+interface SubDepartment {
+    sub_department_name: string;
+    selected: boolean;
+}
 
 interface Department {
     department: string;
-    sub_departments: string[]; // Each sub-department is a string
+    sub_departments: SubDepartment[];
+    selected: boolean;
+    cli: boolean;
 }
 
 
 export const FirstDataTable = () => {
 
+
+    // [ Checked Component 2 Logics Start 
+
+    const [departments, setDepartments] = useState<Department[]>(
+        DepartmentData.map((department) => ({
+            ...department,
+            cli: false, 
+        }))
+    );
+
+    const handleDepartmentChange = (departmentIndex: number) => (event: React.ChangeEvent<HTMLInputElement>) => {
+        const updatedDepartments = [...departments];
+        updatedDepartments[departmentIndex].selected = event.target.checked;
+
+        updatedDepartments[departmentIndex].sub_departments.forEach((subDepartment) => {
+            subDepartment.selected = event.target.checked;
+        });
+
+        setDepartments(updatedDepartments);
+    };
+
+    const handleSubDepartmentChange = (departmentIndex: number, subDepartmentIndex: number) => (
+        event: React.ChangeEvent<HTMLInputElement>
+    ) => {
+        const updatedDepartments = [...departments];
+        updatedDepartments[departmentIndex].sub_departments[subDepartmentIndex].selected = event.target.checked;
+
+        if (updatedDepartments[departmentIndex].sub_departments.every((subDep) => subDep.selected)) {
+            updatedDepartments[departmentIndex].selected = true;
+        } else {
+            updatedDepartments[departmentIndex].selected = false;
+        }
+
+        setDepartments(updatedDepartments);
+    };
+
+    //Checked Component 2 Logics End ]
+
     const [userData, setUserData] = useState<user[]>([])
-    const [isOpen, setIsOpen] = useState(false);
+
+
+    //Fetch List From Api
 
     const Data = async () => {
         try {
@@ -34,19 +77,21 @@ export const FirstDataTable = () => {
         }
     }
 
-    const toggleCollapsible = () => {
-        setIsOpen(!isOpen);
-    };
+    //Api Call
 
     useEffect(() => {
         Data();
     }, [])
+
+    // DataGrid Colums
 
     const columns = [
         { field: "id", headerName: "Id", width: 20, headerClassName: 'cell', cellClassName: 'cell' },
         { field: "title", headerName: "Title", width: 300, headerClassName: 'cell', cellClassName: 'cell', editable: true, },
         { field: "body", headerName: "Body", width: 350, headerClassName: 'cell', cellClassName: 'cell', editable: true, }
     ]
+
+    // DataGrid Rows
 
     const rows = userData.map((row) => ({
         id: row.id,
@@ -55,8 +100,13 @@ export const FirstDataTable = () => {
 
     }))
 
-    const Collapseicon = isOpen ? <>&#8722;</> : <>&#43;</>;
+    const handleCliToggle = (departmentIndex: number) => {
+        const updatedDepartments = [...departments];
+        updatedDepartments[departmentIndex].cli = !updatedDepartments[departmentIndex].cli;
+        setDepartments(updatedDepartments);
+    };
 
+    //Page Option For Table
     const pageSizeOptions = [10, 20, 30, 100]
 
     return (
@@ -87,23 +137,53 @@ export const FirstDataTable = () => {
                     />
                 </div>
 
-                {/* //Component 2 */}
-
                 <div>
+
                     <div className="py-3">
                         <h1 className="font-mono text-center font-bold text-[32px]">Component 2</h1>
                     </div>
+
                     <div className="m-auto w-1/2 p-5">
-                        {Department.map((dept: Department) => (
-                            <ul key={dept.department} className="my-2">
-                                <div className="flex items-center"><span className="font-extrabold text-[23px] mr-2.5 mb-1.5" onClick={toggleCollapsible}>{Collapseicon}</span><input type="checkbox" className="w-[20px] mr-2.5 h-[20px]" /><h1 className="font-mono font-bold text-xl">{dept.department}</h1></div>
-                                {dept.sub_departments.map((subDept: string) => (
-                                    <li key={subDept} className="ml-14 flex items-center"><input type="checkbox" className="w-[15px] mr-2.5 h-[15px]" /><span className="font-mono font-semibold text-[16px]">{subDept}</span></li>
-                                ))}
-                            </ul>
+
+                        {departments.map((department, departmentIndex) => (
+                            <div key={department.department}>
+                                <div className="flex items-center m-4">
+                                    <span className="font-extrabold text-[23px] mr-2.5 mb-1.5 cursor-pointer" onClick={() => handleCliToggle(departmentIndex)} >{departments[departmentIndex].cli ? <>&#8722;</> : <>&#43;</>}</span>
+                                    <label>
+                                        <input
+                                            type="checkbox"
+                                            checked={department.selected}
+                                            className="w-[18px] mr-2.5 mt-2.5 h-[18px]"
+                                            onChange={handleDepartmentChange(departmentIndex)}
+                                        />
+
+                                    </label>
+                                    <h1 className="font-mono font-bold text-xl">{department.department}</h1>
+                                </div>
+
+                                <ul className={department.cli?'custmer_ul':'hidden'}>
+                                    {department.sub_departments.map((subDepartment, subDepartmentIndex) => (
+                                        <li key={subDepartment.sub_department_name}>
+                                            <label>
+                                                <input
+                                                    type="checkbox"
+                                                    checked={subDepartment.selected}
+                                                    className="w-[18px] mr-2.5 mt-2.5 h-[18px]"
+                                                    onChange={handleSubDepartmentChange(departmentIndex, subDepartmentIndex)}
+                                                />
+                                                <span className="font-mono font-semibold text-[16px]"> {subDepartment.sub_department_name}</span>
+                                            </label>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
                         ))}
+
+
                     </div>
                 </div>
+
+
             </div>
         </>
     )

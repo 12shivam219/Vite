@@ -1,0 +1,34 @@
+[
+	{
+		"department": "customer_service",
+		"sub_departments": [
+			{
+				"sub_department_name": "support",
+				"selected": false
+			},
+			{
+				"sub_department_name": "customer_success",
+				"selected": false
+			}
+		],
+		"selected": false
+	},
+	{
+		"department": "design",
+		"sub_departments": [
+			{
+				"sub_department_name": "graphic_design",
+				"selected": false
+			},
+			{
+				"sub_department_name": "product_design",
+				"selected": false
+			},
+			{
+				"sub_department_name": "web_design",
+				"selected": false
+			}
+		],
+		"selected": false
+	}
+]

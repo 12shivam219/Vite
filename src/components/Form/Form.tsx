@@ -1,6 +1,7 @@
+
 import { Alert } from "@mui/material";
 import { useEffect, useState } from "react"
-
+import {  useNavigate } from "react-router-dom";
 
 export const Form = () => {
 
@@ -12,72 +13,63 @@ export const Form = () => {
   const [emailError, setEmailError] = useState<boolean>(false)
   const [numberError, setNumberError] = useState<boolean>(false)
 
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const savedDetails = localStorage.getItem('saveDetails')
+    const savedDetails = localStorage.getItem('savedDetails');
     if (savedDetails) {
       setSaveDetails(JSON.parse(savedDetails));
     }
-  }, [])
-
+  }, []);
 
   useEffect(() => {
     localStorage.setItem('savedDetails', JSON.stringify(saveDetails));
-  }, [saveDetails])
+  }, [saveDetails]);
 
   const validateEmail = (email: string) => {
     const regExp = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i;
-    if (!regExp.test(email)) {
-      return false;
-    }
-    return true;
+    return regExp.test(email);
   };
 
   const validatePhone = (number: string) => {
-    if (number.length < 10) {
-      return false
-    }
-    return true;
-  }
-
+    return number.length >= 10;
+  };
 
   const handleSubmit = () => {
-
     const newData = {
       name: name,
       email: email,
       number: number
+    };
+
+    if (!newData.name || !newData.email || !newData.number) {
+      setFillDetails(true);
+      return;
     }
 
+    if (!validateEmail(newData.email)) {
+      setEmailError(true);
+      return;
+    }
 
-    if (newData.email === '' && newData.name === '' && newData.number === '') {
-      setTimeout(() => {
-        setFillDetails(false)
-      }, 1000);
-      setFillDetails(true)
+    if (!validatePhone(newData.number)) {
+      setNumberError(true);
+      return;
     }
-    else if (!validateEmail(newData.email)) {
-      setTimeout(() => {
-        setEmailError(false)
-      }, 1000);
-      setEmailError(true)
-    }
-    else if (!validatePhone(newData.number)) {
-      setTimeout(() => {
-        setNumberError(false)
-      }, 1000);
-      setNumberError(true)
-    }
-    else {
-      setSaveDetails([...saveDetails, newData])
-      setFillDetails(false)
-    }
+
+    setSaveDetails(prevState => [...prevState, newData]);
+    setFillDetails(false);
+    setEmailError(false);
+    setNumberError(false);
+
+    navigate('/DataTable')
 
     setName('');
     setNumber('');
     setEmail('');
 
   };
+
 
   return (
     <>
@@ -145,7 +137,7 @@ export const Form = () => {
 
           <div className="flex justify-center gap-2">
             <div className="Button text-center">
-              <button onClick={handleSubmit} className="font-sans w-[100px] text-center font-bold border-2 border-solid border-black rounded-lg text-[24px]">Next</button>
+                <button onClick={handleSubmit} className="font-sans w-[100px] text-center font-bold border-2 border-solid border-black rounded-lg text-[24px]">Next</button>
             </div>
           </div>
 
@@ -174,3 +166,4 @@ export const Form = () => {
     </>
   )
 }
+
